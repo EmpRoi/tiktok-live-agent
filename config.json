@@ -1,0 +1,103 @@
+{
+  "tiktok": {
+    "unique_id": "creator01.72",
+    "auto_reconnect": true,
+    "check_interval": 30
+  },
+  "features": {
+    "welcome_users": true,
+    "thank_followers": true,
+    "thank_sharers": true,
+    "track_statistics": true,
+    "moderation": true,
+    "commands": true,
+    "vip_recognition": true,
+    "poll_tracking": true,
+    "question_tracking": true
+  },
+  "messages": {
+    "welcome": "Hoş geldin {nickname}! 🎉",
+    "follow": "Teşekkürler {nickname}, takip ettiğin için! ❤️",
+    "share": "{nickname} yayını paylaştı! Çok teşekkürler! 🔥",
+    "gift_small": "{nickname} {gift_name} gönderdi! Teşekkürler! 🎁",
+    "gift_medium": "{nickname} {count}x {gift_name} gönderdi! Muhteşemsin! 💎",
+    "gift_large": "{nickname} {count}x {gift_name} gönderdi! İNANILMAZ! 🌟✨",
+    "vip_join": "VIP üyemiz {nickname} yayına katıldı! 👑",
+    "top_gifter": "{nickname} en çok hediye gönderende TOP 3'e girdi! 🏆"
+  },
+  "commands": {
+    "!komutlar": "Mevcut komutlar: !komutlar, !stats, !top, !hediye, !yardım",
+    "!yardım": "Yardım için komutları görmek isterseniz !komutlar yazın.",
+    "!stats": "İstatistikler gösteriliyor...",
+    "!top": "En aktif kullanıcılar gösteriliyor...",
+    "!hediye": "Hediye sıralaması gösteriliyor..."
+  },
+  "moderation": {
+    "enabled": true,
+    "spam_limit": 5,
+    "spam_time_window": 10,
+    "bad_words": [
+      "spam",
+      "reklam"
+    ],
+    "auto_warn": true
+  },
+  "responses": {
+    "selam": "Aleyküm selam, {nickname}! Hoş geldin! 👋",
+    "merhaba": "Merhaba {nickname}, nasılsın? 😊",
+    "nasılsın": "İyiyim, teşekkürler! Sen nasılsın {nickname}? 💫",
+    "günaydın": "Günaydın {nickname}! Harika bir gün olsun! ☀️",
+    "iyi geceler": "İyi geceler {nickname}! Tatlı rüyalar! 🌙",
+    "teşekkürler": "Rica ederim {nickname}! 💕",
+    "bye": "Görüşürüz {nickname}! Tekrar bekleriz! 👋"
+  },
+  "statistics": {
+    "save_to_file": true,
+    "show_summary": true,
+    "track_top_users": 10
+  },
+  "display": {
+    "colored_output": true,
+    "show_emojis": true,
+    "show_timestamps": true
+  },
+  "speech": {
+    "enabled": true,
+    "rate": 150,
+    "volume": 1,
+    "voice_id": null,
+    "events": {
+      "comment": true,
+      "gift": true,
+      "follow": true,
+      "join": true,
+      "like": true,
+      "share": true
+    },
+    "language": "turkish",
+    "language_code": "tr"
+  },
+  "commenter": {
+    "enabled": true,
+    "username": "",
+    "password": "",
+    "headless": true,
+    "comment_delay": 2,
+    "auto_reply": true
+  },
+  "auto_responses": {
+    "selam": "Aleyküm selam @{username}! Hoş geldin! 👋",
+    "merhaba": "Merhaba @{username}! Nasılsın? 😊",
+    "nasılsın": "İyiyim @{username}, teşekkürler! 💫",
+    "günaydın": "Günaydın @{username}! ☀️",
+    "iyi geceler": "İyi geceler @{username}! 🌙",
+    "teşekkürler": "Rica ederim @{username}! 💕",
+    "help": "Yardım için: !komutlar yazın",
+    "ne yapıyorsun": "Sizin için yayındayım @{username}! 🎬"
+  },
+  "custom_responses": {
+    "!hello": "Hello everyone! 👋",
+    "!help": "Available commands: !hello, !help, !stats",
+    "!welcome": "Welcome to the stream @{username}!"
+  }
+}

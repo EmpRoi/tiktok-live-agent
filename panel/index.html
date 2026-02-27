@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Live Agent - Kontrol Paneli</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 20px; }
+        .container { max-width: 960px; margin: 0 auto; background-color: #fff; padding: 24px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+        h1 { color: #fe2c55; border-bottom: 3px solid #fe2c55; padding-bottom: 12px; margin-top: 0; font-size: 1.6rem; }
+        h2 { color: #1c1e21; border-bottom: 2px solid #e7e7e7; padding-bottom: 8px; margin-top: 28px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        h2 .icon { font-size: 1.2rem; }
+        .form-group { margin-bottom: 14px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+        .form-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+        label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.9rem; color: #444; }
+        label.checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; padding: 6px 0; }
+        input[type="text"], input[type="number"], input[type="password"], select, textarea {
+            width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px;
+            font-size: 0.9rem; transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus, textarea:focus {
+            outline: none; border-color: #fe2c55; box-shadow: 0 0 0 2px rgba(254,44,85,0.15);
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #fe2c55; }
+        .btn { background-color: #1877f2; color: white; padding: 9px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: background-color 0.2s; }
+        .btn:hover { background-color: #166fe5; }
+        .btn-save { background-color: #fe2c55; margin-top: 24px; padding: 12px 28px; font-size: 1rem; font-weight: 700; width: 100%; }
+        .btn-save:hover { background-color: #e0253c; }
+        .btn-add { background-color: #25a244; font-size: 0.85rem; padding: 5px 12px; margin-top: 8px; }
+        .btn-add:hover { background-color: #1e8a38; }
+        .btn-danger { background-color: #fa383e; font-size: 0.82rem; padding: 4px 10px; }
+        .btn-danger:hover { background-color: #d42d32; }
+        #message { position: fixed; bottom: 24px; right: 24px; padding: 14px 22px; border-radius: 8px; display: none; text-align: center; font-weight: bold; z-index: 9999; min-width: 260px; box-shadow: 0 4px 16px rgba(0,0,0,0.18); font-size: 1rem; }
+        .success { background-color: #e6f9ee; color: #1a7a3a; border: 1px solid #a3d9b1; }
+        .error { background-color: #ffebe8; color: #c94a4a; border: 1px solid #f5b8b8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        th, td { border: 1px solid #e0e0e0; padding: 8px 10px; text-align: left; }
+        th { background-color: #f7f7f7; font-weight: 600; color: #555; }
+        td input[type="text"] { border: none; padding: 4px 6px; background: transparent; }
+        td input[type="text"]:focus { background: #fff; border: 1px solid #fe2c55; border-radius: 4px; }
+        .section-card { background: #fafafa; border: 1px solid #ebebeb; border-radius: 8px; padding: 16px; margin-top: 8px; }
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+        .badge { display: inline-block; background: #fe2c55; color: white; font-size: 0.7rem; padding: 2px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+        .hint { font-size: 0.78rem; color: #888; margin-top: 3px; }
+        hr { border: none; border-top: 1px solid #ebebeb; margin: 24px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 TikTok Live Agent Kontrol Paneli</h1>
+        <form id="config-form">
+
+            <!-- ===== GENEL AYARLAR ===== -->
+            <h2><span class="icon">⚙️</span> Genel Ayarlar</h2>
+            <div style="margin-bottom: 16px; padding: 12px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px;">
+                <button type="button" class="btn" id="restart-btn" style="background-color: #fd7e14;">🔄 TikTok Hesabına Bağlan / Yeniden Bağlan</button>
+                <p class="hint" style="margin: 8px 0 0 0;">TikTok kullanıcı adını değiştirdiysen bu butona basarak yeni hesaba bağlanabilirsin.</p>
+            </div>
+
+            <!-- ===== GÜVENLİK AYARLARI ===== -->
+            <h2><span class="icon">🔐</span> Güvenlik Ayarları <span style="color:#888;font-weight:400;font-size:0.85rem">(Sunucu modu)</span></h2>
+            <div class="section-card">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="admin_username">Kullanıcı Adı</label>
+                        <input type="text" id="admin_username" placeholder="Yeni kullanıcı adı">
+                    </div>
+                    <div class="form-group">
+                        <label for="admin_password">Yeni Şifre</label>
+                        <input type="password" id="admin_password" placeholder="En az 4 karakter">
+                    </div>
+                    <div class="form-group">
+                        <label for="admin_password_confirm">Şifre Tekrar</label>
+                        <input type="password" id="admin_password_confirm" placeholder="Şifreyi tekrar girin">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-add" id="change-password-btn">🔑 Şifreyi Değiştir</button>
+                <p class="hint" style="margin-top:8px;">Not: Şifre değişikliği sunucu modunda çalışırken etkin olur.</p>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="unique_id">TikTok Kullanıcı Adı <span style="color:#888;font-weight:400">(@ olmadan)</span></label>
+                    <input type="text" id="unique_id" name="tiktok.unique_id" placeholder="örn: creator01">
+                </div>
+                <div class="form-group">
+                    <label for="check_interval">Canlı Yayın Kontrol Aralığı <span style="color:#888;font-weight:400">(saniye)</span></label>
+                    <input type="number" id="check_interval" name="tiktok.check_interval" min="5" max="300">
+                </div>
+                <div class="form-group" style="display:flex;align-items:flex-end;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="auto_reconnect" name="tiktok.auto_reconnect">
+                        Otomatik Yeniden Bağlan
+                    </label>
+                </div>
+            </div>
+
+            <!-- ===== GÖRÜNÜM AYARLARI ===== -->
+            <h2><span class="icon">🎨</span> Görünüm Ayarları</h2>
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="colored_output" name="display.colored_output">
+                        Renkli Konsol Çıktısı
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show_emojis" name="display.show_emojis">
+                        Emoji Göster
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show_timestamps" name="display.show_timestamps">
+                        Zaman Damgası Göster
+                    </label>
+                </div>
+            </div>
+
+            <!-- ===== ÖZELLİKLER ===== -->
+            <h2><span class="icon">🔧</span> Özellikler</h2>
+            <div class="section-card">
+                <div class="form-grid" id="features-container"></div>
+            </div>
+
+            <!-- ===== İSTATİSTİK AYARLARI ===== -->
+            <h2><span class="icon">📊</span> İstatistik Ayarları</h2>
+            <div class="form-grid-3">
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="stats_save_to_file" name="statistics.save_to_file">
+                        Dosyaya Kaydet
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="stats_show_summary" name="statistics.show_summary">
+                        Özet Göster
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="stats_track_top_users">Top Kullanıcı Sayısı</label>
+                    <input type="number" id="stats_track_top_users" name="statistics.track_top_users" min="1" max="50">
+                </div>
+            </div>
+
+            <!-- ===== SESLENDİRME (TTS) ===== -->
+            <h2><span class="icon">🔊</span> Seslendirme (TTS)</h2>
+            <div class="section-card">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="speech_enabled" name="speech.enabled">
+                            Seslendirmeyi Aktif Et
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="translate_enabled" name="speech.translate_enabled">
+                            Yorumları Çevir <span style="color:#888;font-weight:400;font-size:0.8rem">(Çeviri özelliği)</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="translate_to">Çeviri Dili</label>
+                        <select id="translate_to" name="speech.translate_to">
+                            <option value="tr">Türkçe</option>
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="fr">Français</option>
+                            <option value="de">Deutsch</option>
+                            <option value="ru">Русский</option>
+                            <option value="ar">العربية</option>
+                            <option value="ja">日本語</option>
+                            <option value="ko">한국어</option>
+                            <option value="zh-CN">中文</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="speech_language">TTS Dili</label>
+                        <input type="text" id="speech_language" name="speech.language" placeholder="Örn: turkish, english">
+                    </div>
+                    <div class="form-group">
+                        <label for="speech_language_code">TTS Dil Kodu</label>
+                        <input type="text" id="speech_language_code" name="speech.language_code" placeholder="Örn: tr, en">
+                    </div>
+                    <div class="form-group">
+                        <label for="speech_rate">Konuşma Hızı <span style="color:#888;font-weight:400">(varsayılan: 150)</span></label>
+                        <input type="number" id="speech_rate" name="speech.rate" min="50" max="400">
+                    </div>
+                    <div class="form-group">
+                        <label for="speech_volume">Ses Seviyesi <span style="color:#888;font-weight:400">(0.0 – 1.0)</span></label>
+                        <input type="number" id="speech_volume" name="speech.volume" step="0.1" min="0" max="1">
+                    </div>
+                </div>
+
+                <hr>
+                <label style="font-weight:700;font-size:0.95rem;margin-bottom:10px;display:block;">Hangi Olaylar Seslendirilsin?</label>
+                <div class="events-grid" id="speech-events-container">
+                    <!-- JS ile doldurulacak -->
+                </div>
+            </div>
+
+            <!-- ===== YORUM BOTU ===== -->
+            <h2><span class="icon">💬</span> Yorum Botu <span class="badge">Selenium</span></h2>
+            <div class="section-card">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="commenter_enabled" name="commenter.enabled">
+                            Yorum Botunu Aktif Et
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="commenter_headless" name="commenter.headless">
+                            Arka Planda Çalış (Headless)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="commenter_auto_reply" name="commenter.auto_reply">
+                            Otomatik Yanıt Ver
+                        </label>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="commenter_username">TikTok Kullanıcı Adı (Bot Hesabı)</label>
+                        <input type="text" id="commenter_username" name="commenter.username" placeholder="Bot hesabının kullanıcı adı">
+                    </div>
+                    <div class="form-group">
+                        <label for="commenter_password">Şifre</label>
+                        <input type="password" id="commenter_password" name="commenter.password" placeholder="Bot hesabının şifresi">
+                        <p class="hint" style="color:#dc3545;">⚠️ Güvenlik Uyarısı: Şifre düz metin olarak kaydedilir. Ayrı bir bot hesabı kullanmanız önerilir.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="commenter_comment_delay">Yorum Gecikmesi <span style="color:#888;font-weight:400">(saniye)</span></label>
+                        <input type="number" id="commenter_comment_delay" name="commenter.comment_delay" min="1" max="60">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MODERASYON ===== -->
+            <h2><span class="icon">🛡️</span> Moderasyon</h2>
+            <div class="section-card">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="moderation_enabled" name="moderation.enabled">
+                            Moderasyonu Aktif Et
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="spam_limit">Spam Limiti <span style="color:#888;font-weight:400">(mesaj sayısı)</span></label>
+                        <input type="number" id="spam_limit" name="moderation.spam_limit" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="spam_time_window">Spam Zaman Aralığı <span style="color:#888;font-weight:400">(saniye)</span></label>
+                        <input type="number" id="spam_time_window" name="moderation.spam_time_window" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="auto_warn" name="moderation.auto_warn">
+                            Otomatik Uyar
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bad_words">Yasaklı Kelimeler <span style="color:#888;font-weight:400">(virgülle ayırın)</span></label>
+                    <textarea id="bad_words" name="moderation.bad_words" placeholder="spam, reklam, küfür..."></textarea>
+                </div>
+            </div>
+
+            <!-- ===== MESAJLAR ===== -->
+            <h2><span class="icon">✉️</span> Mesaj Şablonları</h2>
+            <p class="hint" style="margin-top:-8px;">Kullanılabilir değişkenler: <code>{nickname}</code>, <code>{gift_name}</code>, <code>{count}</code></p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="msg_welcome">Karşılama Mesajı</label>
+                    <input type="text" id="msg_welcome" name="messages.welcome">
+                </div>
+                <div class="form-group">
+                    <label for="msg_follow">Takip Teşekkür Mesajı</label>
+                    <input type="text" id="msg_follow" name="messages.follow">
+                </div>
+                <div class="form-group">
+                    <label for="msg_share">Paylaşım Teşekkür Mesajı</label>
+                    <input type="text" id="msg_share" name="messages.share">
+                </div>
+                <div class="form-group">
+                    <label for="msg_gift_small">Küçük Hediye Mesajı <span style="color:#888;font-weight:400">(<10)</span></label>
+                    <input type="text" id="msg_gift_small" name="messages.gift_small">
+                </div>
+                <div class="form-group">
+                    <label for="msg_gift_medium">Orta Hediye Mesajı <span style="color:#888;font-weight:400">(10–99)</span></label>
+                    <input type="text" id="msg_gift_medium" name="messages.gift_medium">
+                </div>
+                <div class="form-group">
+                    <label for="msg_gift_large">Büyük Hediye Mesajı <span style="color:#888;font-weight:400">(100+)</span></label>
+                    <input type="text" id="msg_gift_large" name="messages.gift_large">
+                </div>
+                <div class="form-group">
+                    <label for="msg_vip_join">VIP Katılım Mesajı</label>
+                    <input type="text" id="msg_vip_join" name="messages.vip_join">
+                </div>
+                <div class="form-group">
+                    <label for="msg_top_gifter">Top Gifter Mesajı</label>
+                    <input type="text" id="msg_top_gifter" name="messages.top_gifter">
+                </div>
+            </div>
+
+            <!-- ===== OTOMATİK YANITLAR (responses) ===== -->
+            <h2><span class="icon">💡</span> Otomatik Yanıtlar <span style="color:#888;font-weight:400;font-size:0.85rem">(Konsol çıktısı)</span></h2>
+            <p class="hint" style="margin-top:-8px;">Kullanılabilir değişken: <code>{nickname}</code></p>
+            <table id="responses-table">
+                <thead><tr><th>Anahtar Kelime</th><th>Yanıt</th><th style="width:60px"></th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <button type="button" class="btn btn-add" id="add-response-btn">+ Yeni Yanıt Ekle</button>
+
+            <!-- ===== BOT OTOMATİK YANITLARI (auto_responses) ===== -->
+            <h2><span class="icon">🤖</span> Bot Otomatik Yanıtları <span style="color:#888;font-weight:400;font-size:0.85rem">(Yorum olarak gönderilir)</span></h2>
+            <p class="hint" style="margin-top:-8px;">Kullanılabilir değişken: <code>{username}</code></p>
+            <table id="auto-responses-table">
+                <thead><tr><th>Anahtar Kelime</th><th>Bot Yanıtı</th><th style="width:60px"></th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <button type="button" class="btn btn-add" id="add-auto-response-btn">+ Yeni Bot Yanıtı Ekle</button>
+
+            <!-- ===== ÖZEL KOMUTLAR (commands) ===== -->
+            <h2><span class="icon">⌨️</span> Özel Komutlar <span style="color:#888;font-weight:400;font-size:0.85rem">(! ile başlar)</span></h2>
+            <table id="commands-table">
+                <thead><tr><th>Komut</th><th>Yanıt</th><th style="width:60px"></th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <button type="button" class="btn btn-add" id="add-command-btn">+ Yeni Komut Ekle</button>
+
+            <!-- ===== ÖZEL BOT KOMUTLARI (custom_responses) ===== -->
+            <h2><span class="icon">🎮</span> Özel Bot Komutları <span style="color:#888;font-weight:400;font-size:0.85rem">(Bot tarafından yorum olarak gönderilir)</span></h2>
+            <p class="hint" style="margin-top:-8px;">Kullanılabilir değişken: <code>{username}</code></p>
+            <table id="custom-responses-table">
+                <thead><tr><th>Komut</th><th>Bot Yanıtı</th><th style="width:60px"></th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <button type="button" class="btn btn-add" id="add-custom-response-btn">+ Yeni Bot Komutu Ekle</button>
+
+            <br>
+            <div id="message"></div>
+            <button type="submit" class="btn btn-save">💾 Tüm Ayarları Kaydet</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("config-form");
+
+            // Config'i yükle ve formu doldur
+            fetch('/api/config')
+                .then(response => response.json())
+                .then(config => {
+                    window._appConfig = config;
+                    populateForm(config);
+                })
+                .catch(error => showMessage("Ayarları yüklerken hata oluştu: " + error, false));
+
+            // Yeniden başlat butonu
+            document.getElementById('restart-btn').addEventListener('click', () => {
+                if (!confirm('Bot yeniden başlatılacak. Devam etmek istiyor musunuz?')) return;
+
+                fetch('/api/restart', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        showMessage(data.message || 'Bot yeniden başlatılıyor...', true);
+                        setTimeout(() => {
+                            alert('Bot yeniden başlatılıyor. Sayfayı 5 saniye sonra yenileyin.');
+                        }, 1000);
+                    })
+                    .catch(error => showMessage("Hata oluştu: " + error, false));
+            });
+
+            // Yeniden başlat butonu
+            document.getElementById('restart-btn').addEventListener('click', () => {
+                if (!confirm('Bot yeniden başlatılacak. Devam etmek istiyor musunuz?')) return;
+
+                fetch('/api/restart', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        showMessage(data.message || 'Bot yeniden başlatılıyor...', true);
+                        setTimeout(() => {
+                            alert('Bot yeniden başlatılıyor. Sayfayı 5 saniye sonra yenileyin.');
+                        }, 1000);
+                    })
+                    .catch(error => showMessage("Hata oluştu: " + error, false));
+            });
+
+            // Şifre değiştir butonu
+            document.getElementById('change-password-btn').addEventListener('click', () => {
+                const username = document.getElementById('admin_username').value.trim();
+                const password = document.getElementById('admin_password').value;
+                const confirmPassword = document.getElementById('admin_password_confirm').value;
+
+                if (!username) {
+                    showMessage("Kullanıcı adı gereklidir", false);
+                    return;
+                }
+                if (!password || password.length < 4) {
+                    showMessage("Şifre en az 4 karakter olmalı", false);
+                    return;
+                }
+                if (password !== confirmPassword) {
+                    showMessage("Şifreler eşleşmiyor", false);
+                    return;
+                }
+
+                fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message || 'Şifre değiştirildi!', true);
+                        document.getElementById('admin_username').value = '';
+                        document.getElementById('admin_password').value = '';
+                        document.getElementById('admin_password_confirm').value = '';
+                    } else {
+                        showMessage(data.message || 'Şifre değiştirilemedi', false);
+                    }
+                })
+                .catch(error => showMessage("Hata oluştu: " + error, false));
+            });
+
+            // Formu kaydet
+            form.addEventListener("submit", (event) => {
+                event.preventDefault();
+                const newConfig = serializeForm();
+
+                fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newConfig)
+                })
+                .then(response => {
+                    const isSuccess = response.ok;
+                    return response.json().then(data => ({ data, isSuccess }));
+                })
+                .then(({ data, isSuccess }) => {
+                    showMessage(data.message || 'Bilinmeyen yanıt', isSuccess);
+                })
+                .catch(error => showMessage("Ayarları kaydederken hata oluştu: " + error, false));
+            });
+
+            // Dinamik Tablolar
+            setupDynamicTable('responses', 'responses-table', 'add-response-btn', ['Anahtar Kelime', 'Yanıt']);
+            setupDynamicTable('auto_responses', 'auto-responses-table', 'add-auto-response-btn', ['Anahtar Kelime', 'Bot Yanıtı']);
+            setupDynamicTable('commands', 'commands-table', 'add-command-btn', ['Komut', 'Yanıt']);
+            setupDynamicTable('custom_responses', 'custom-responses-table', 'add-custom-response-btn', ['Komut', 'Bot Yanıtı']);
+        });
+
+        // ─── FORM DOLDURMA ───────────────────────────────────────────────────────
+        function populateForm(config) {
+            // Genel Ayarlar
+            setVal('unique_id', config.tiktok?.unique_id || '');
+            setVal('check_interval', config.tiktok?.check_interval ?? 30);
+            setChecked('auto_reconnect', config.tiktok?.auto_reconnect ?? true);
+
+            // Görünüm
+            setChecked('colored_output', config.display?.colored_output ?? true);
+            setChecked('show_emojis', config.display?.show_emojis ?? true);
+            setChecked('show_timestamps', config.display?.show_timestamps ?? true);
+
+            // Özellikler (dinamik)
+            const featuresContainer = document.getElementById('features-container');
+            featuresContainer.innerHTML = '';
+            const featureLabels = {
+                welcome_users: '👋 Kullanıcıları Karşıla',
+                thank_followers: '❤️ Takipçilere Teşekkür Et',
+                thank_sharers: '🔄 Paylaşanlara Teşekkür Et',
+                track_statistics: '📊 İstatistik Takibi',
+                moderation: '🛡️ Moderasyon',
+                commands: '⌨️ Komut Sistemi',
+                vip_recognition: '👑 VIP Tanıma',
+                poll_tracking: '📋 Anket Takibi',
+                question_tracking: '❓ Soru Takibi'
+            };
+            for (const feature in config.features) {
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                const label = document.createElement('label');
+                label.className = 'checkbox-label';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `feature_${feature}`;
+                checkbox.name = `features.${feature}`;
+                checkbox.checked = config.features[feature];
+                label.appendChild(checkbox);
+                label.append(` ${featureLabels[feature] || feature.replace(/_/g, ' ')}`);
+                div.appendChild(label);
+                featuresContainer.appendChild(div);
+            }
+
+            // İstatistik Ayarları
+            setChecked('stats_save_to_file', config.statistics?.save_to_file ?? true);
+            setChecked('stats_show_summary', config.statistics?.show_summary ?? true);
+            setVal('stats_track_top_users', config.statistics?.track_top_users ?? 10);
+
+            // Seslendirme
+            setChecked('speech_enabled', config.speech?.enabled ?? true);
+            setChecked('translate_enabled', config.speech?.translate_enabled ?? false);
+            setVal('translate_to', config.speech?.translate_to || 'tr');
+            setVal('speech_language', config.speech?.language || 'turkish');
+            setVal('speech_language_code', config.speech?.language_code || 'tr');
+            setVal('speech_rate', config.speech?.rate ?? 150);
+            setVal('speech_volume', config.speech?.volume ?? 1.0);
+
+            // TTS Olay Ayarları (dinamik)
+            const eventsContainer = document.getElementById('speech-events-container');
+            eventsContainer.innerHTML = '';
+            const eventLabels = {
+                comment: '💬 Yorumlar',
+                gift: '🎁 Hediyeler',
+                follow: '❤️ Takipler',
+                join: '👋 Katılımlar',
+                like: '👍 Beğeniler',
+                share: '🔄 Paylaşımlar'
+            };
+            const speechEvents = config.speech?.events || {};
+            for (const [key, label] of Object.entries(eventLabels)) {
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                const lbl = document.createElement('label');
+                lbl.className = 'checkbox-label';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.id = `speech_event_${key}`;
+                cb.name = `speech.events.${key}`;
+                cb.checked = speechEvents[key] ?? true;
+                lbl.appendChild(cb);
+                lbl.append(` ${label}`);
+                div.appendChild(lbl);
+                eventsContainer.appendChild(div);
+            }
+
+            // Yorum Botu
+            setChecked('commenter_enabled', config.commenter?.enabled ?? false);
+            setChecked('commenter_headless', config.commenter?.headless ?? true);
+            setChecked('commenter_auto_reply', config.commenter?.auto_reply ?? true);
+            setVal('commenter_username', config.commenter?.username || '');
+            setVal('commenter_password', config.commenter?.password || '');
+            setVal('commenter_comment_delay', config.commenter?.comment_delay ?? 2);
+
+            // Moderasyon
+            setChecked('moderation_enabled', config.moderation?.enabled ?? true);
+            setVal('spam_limit', config.moderation?.spam_limit ?? 5);
+            setVal('spam_time_window', config.moderation?.spam_time_window ?? 10);
+            setChecked('auto_warn', config.moderation?.auto_warn ?? true);
+            setVal('bad_words', (config.moderation?.bad_words || []).join(', '));
+
+            // Mesajlar
+            setVal('msg_welcome', config.messages?.welcome || '');
+            setVal('msg_follow', config.messages?.follow || '');
+            setVal('msg_share', config.messages?.share || '');
+            setVal('msg_gift_small', config.messages?.gift_small || '');
+            setVal('msg_gift_medium', config.messages?.gift_medium || '');
+            setVal('msg_gift_large', config.messages?.gift_large || '');
+            setVal('msg_vip_join', config.messages?.vip_join || '');
+            setVal('msg_top_gifter', config.messages?.top_gifter || '');
+        }
+
+        // ─── FORM SERİLEŞTİRME ───────────────────────────────────────────────────
+        function serializeForm() {
+            const form = document.getElementById('config-form');
+            const config = {};
+
+            // Tüm named input'ları işle
+            const inputs = form.querySelectorAll('[name]');
+            inputs.forEach(el => {
+                const key = el.getAttribute('name');
+                if (!key) return;
+
+                // Dinamik tablo satırlarını atla
+                if (el.classList.contains('dynamic-key') || el.classList.contains('dynamic-value')) return;
+
+                let value;
+                if (el.type === 'checkbox') {
+                    value = el.checked;
+                } else if (el.type === 'number') {
+                    // Use parseInt for integer fields (no step or step=1), parseFloat for decimal fields
+                    const stepAttr = el.getAttribute('step');
+                    const isFloat = stepAttr && parseFloat(stepAttr) !== 1;
+                    const parsed = isFloat ? parseFloat(el.value) : parseInt(el.value, 10);
+                    value = isNaN(parsed) ? 0 : parsed;
+                } else if (key === 'moderation.bad_words') {
+                    value = el.value.split(',').map(s => s.trim()).filter(Boolean);
+                } else {
+                    value = el.value;
+                }
+
+                setNestedValue(config, key.split('.'), value);
+            });
+
+            // Dinamik tablolar
+            config.responses = serializeTable('responses-table');
+            config.auto_responses = serializeTable('auto-responses-table');
+            config.commands = serializeTable('commands-table');
+            config.custom_responses = serializeTable('custom-responses-table');
+
+            return config;
+        }
+
+        function setNestedValue(obj, keys, value) {
+            let current = obj;
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) current[keys[i]] = {};
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+        }
+
+        // ─── DİNAMİK TABLO YÖNETİMİ ─────────────────────────────────────────────
+        function setupDynamicTable(configKey, tableId, addButtonId, headers) {
+            const tableBody = document.querySelector(`#${tableId} tbody`);
+            const addButton = document.getElementById(addButtonId);
+
+            function renderTable() {
+                tableBody.innerHTML = '';
+                const items = window._appConfig?.[configKey] || {};
+                for (const key in items) {
+                    addRow(tableBody, key, items[key]);
+                }
+            }
+
+            function addRow(tbody, key = '', value = '') {
+                const row = tbody.insertRow();
+
+                const keyInput = document.createElement('input');
+                keyInput.type = 'text';
+                keyInput.value = key;
+                keyInput.className = 'dynamic-key';
+                keyInput.placeholder = headers[0];
+
+                const valInput = document.createElement('input');
+                valInput.type = 'text';
+                valInput.value = value;
+                valInput.className = 'dynamic-value';
+                valInput.placeholder = headers[1];
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'btn btn-danger';
+                delBtn.textContent = 'Sil';
+                delBtn.addEventListener('click', () => row.remove());
+
+                row.insertCell(0).appendChild(keyInput);
+                row.insertCell(1).appendChild(valInput);
+                row.insertCell(2).appendChild(delBtn);
+            }
+
+            addButton.addEventListener('click', () => addRow(tableBody));
+            renderTable();
+        }
+
+        function serializeTable(tableId) {
+            const tableBody = document.querySelector(`#${tableId} tbody`);
+            const data = {};
+            for (const row of tableBody.rows) {
+                const key = row.querySelector('.dynamic-key').value.trim();
+                const value = row.querySelector('.dynamic-value').value.trim();
+                if (key) data[key] = value;
+            }
+            return data;
+        }
+
+        // ─── YARDIMCI FONKSİYONLAR ───────────────────────────────────────────────
+        function setVal(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.value = value;
+        }
+
+        function setChecked(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.checked = !!value;
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&')
+                .replace(/"/g, '"')
+                .replace(/</g, '<')
+                .replace(/>/g, '>');
+        }
+
+        function showMessage(msg, isSuccess = true) {
+            const el = document.getElementById('message');
+            el.textContent = msg;
+            el.className = isSuccess ? 'success' : 'error';
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 8000);
+        }
+    </script>
+</body>
+</html>
