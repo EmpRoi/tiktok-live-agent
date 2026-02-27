@@ -265,7 +265,7 @@ class TikTokLiveAgent:
         
         self.print_event(
             "BEĞENİ",
-            f"{username} {count}x beğendi! (Toplam: {event.total_like_count})",
+            f"{username} {count}x beğendi!",
             Fore.MAGENTA
         )
     

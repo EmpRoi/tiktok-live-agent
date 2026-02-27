@@ -75,7 +75,9 @@
       "share": true
     },
     "language": "turkish",
-    "language_code": "tr"
+    "language_code": "tr",
+    "translate_enabled": true,
+    "translate_to": "tr"
   },
   "commenter": {
     "enabled": true,
