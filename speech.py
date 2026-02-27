@@ -160,6 +160,7 @@ class TextToSpeech:
                     break
                 
                 self.speaking = True
+                print(f"[TTS Worker] Mesaj alındı: {text[:30]}...")
                 
                 if use_gtts:
                     # gTTS ile seslendir
@@ -227,6 +228,7 @@ class TextToSpeech:
     def speak(self, text: str, translate: bool = True):
         """Metni seslendir"""
         if not self.enabled or not TTS_AVAILABLE:
+            print(f"[TTS] Seslendirme devre dışı: enabled={self.enabled}, TTS_AVAILABLE={TTS_AVAILABLE}")
             return
 
         if text and len(text.strip()) > 0:
@@ -235,6 +237,7 @@ class TextToSpeech:
                 text = self.translate_text(text)
 
             self.speech_queue.put(text)
+            print(f"[TTS] Kuyruğa eklendi: {text[:30]}...")
             if COLORS_ENABLED:
                 print(f"{Fore.CYAN}🔊 Seslendiriliyor: {text}{Style.RESET_ALL}")
             else:
