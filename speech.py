@@ -174,15 +174,20 @@ class TextToSpeech:
                             print(f"{Fore.RED}gTTS hatası: {gtts_err}{Style.RESET_ALL}")
                 else:
                     # pyttsx3 ile seslendir
+                    print("[TTS Worker] pyttsx3 ile seslendirme başlıyor...")
                     try:
                         # Ayarlar değiştiyse güncelle
                         engine.setProperty('rate', self.rate)
                         engine.setProperty('volume', self.volume)
                         
+                        print("[TTS Worker] engine.say() çağrılıyor...")
                         engine.say(text)
+                        print("[TTS Worker] engine.runAndWait() çağrılıyor...")
                         engine.runAndWait()
+                        print("[TTS Worker] pyttsx3 seslendirme tamamlandı")
 
                     except Exception as e:
+                        print(f"[TTS Worker] HATA: {e}")
                         if COLORS_ENABLED:
                             print(f"{Fore.RED}❌ TTS motor hatası: {e} — Motor yeniden başlatılıyor...{Style.RESET_ALL}")
                     # Motor bozulduysa yeniden başlat
