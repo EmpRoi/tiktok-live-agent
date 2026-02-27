@@ -419,6 +419,9 @@ class TikTokLiveAgent:
 
 def main():
     """Ana fonksiyon"""
+    import os
+    port = int(os.environ.get('PORT', 8081))
+    
     print(f"""
 {Fore.CYAN}{'='*70}
     ████████╗██╗██╗  ██╗████████╗ ██████╗ ██╗  ██╗
@@ -432,7 +435,7 @@ def main():
 {'='*70}{Style.RESET_ALL}
     """)
     
-    start_panel_in_thread()
+    start_panel_in_thread(port)
     
     try:
         agent = TikTokLiveAgent()

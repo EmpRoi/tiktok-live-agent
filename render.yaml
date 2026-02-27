@@ -2,8 +2,10 @@ services:
   - type: web
     name: tiktok-live-agent
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && apt-get update && apt-get install -y espeak
     startCommand: python main.py
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
+      - key: PORT
+        value: "10000"
