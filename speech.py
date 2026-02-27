@@ -273,6 +273,9 @@ class SpeechHandler:
     
     def should_speak(self, event_type: str) -> bool:
         """Bu olay seslendirilmeli mi?"""
+        # Ana enabled kontrolü
+        if not self.config.get("enabled", False):
+            return False
         return self.events.get(event_type, True)
     
     def on_comment(self, username: str, comment: str):
