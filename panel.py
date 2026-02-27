@@ -49,9 +49,6 @@ class ConfigPanelHandler(http.server.SimpleHTTPRequestHandler):
             except Exception:
                 pass
 
-    # Sınıf başlatıldığında auth bilgilerini yükle
-    _load_auth = classmethod(_load_auth)
-
     def _check_localhost(self):
         """Sadece localhost'tan gelen isteklere izin ver (proxy destekli)"""
         client_ip = self.client_address[0]
