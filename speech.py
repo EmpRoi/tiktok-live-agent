@@ -274,13 +274,18 @@ class SpeechHandler:
     def should_speak(self, event_type: str) -> bool:
         """Bu olay seslendirilmeli mi?"""
         # Ana enabled kontrolü
-        if not self.config.get("enabled", False):
+        enabled = self.config.get("enabled", False)
+        if not enabled:
+            print(f"[TTS] Seslendirme kapalı: {event_type}")
             return False
-        return self.events.get(event_type, True)
+        result = self.events.get(event_type, True)
+        print(f"[TTS] should_speak({event_type}): {result}")
+        return result
     
     def on_comment(self, username: str, comment: str):
         """Yorum seslendir"""
         if self.should_speak("comment"):
+            print(f"[TTS] Yorum seslendiriliyor: {username}: {comment}")
             text = f"{username} dedi ki: {comment}"
             # Yorumları çevir (translate=True)
             self.tts.speak(text, translate=True)
