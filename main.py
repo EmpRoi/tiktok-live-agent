@@ -318,7 +318,14 @@ class TikTokLiveAgent:
     
     async def on_vip_join(self, event: BarrageEvent):
         """VIP kullanıcı katıldığında"""
-        username = event.user.nickname
+        # BarrageEvent farklı yapıya sahip
+        username = getattr(event, 'username', getattr(event, 'user', None))
+        if hasattr(event, 'user') and hasattr(event.user, 'nickname'):
+            username = event.user.nickname
+        elif hasattr(event, 'comment'):
+            username = event.comment
+        else:
+            username = "VIP üye"
         
         # İstatistik güncelle
         if self.features["track_statistics"]:
