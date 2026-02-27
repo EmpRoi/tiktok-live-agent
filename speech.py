@@ -15,6 +15,15 @@ except ImportError:
     TTS_AVAILABLE = False
     print("Uyarı: pyttsx3 kurulu değil. Seslendirme özelliği devre dışı.")
 
+# gTTS fallback for server environments
+try:
+    from gtts import gTTS
+    GTTS_AVAILABLE = True
+except ImportError:
+    gTTS = None
+    GTTS_AVAILABLE = False
+    print("Uyarı: gTTS kurulu değil. Sunucu modunda seslendirme çalışmayabilir.")
+
 # Çeviri desteği
 try:
     from deep_translator import GoogleTranslator
@@ -124,12 +133,23 @@ class TextToSpeech:
         """Seslendirme işçisi - kuyruktaki metinleri seslendirir"""
         # Motor bir kez oluşturulur ve thread boyunca yeniden kullanılır
         engine = None
+        use_gtts = False
+        
         try:
             engine = self._init_engine()
         except Exception as e:
             if COLORS_ENABLED:
-                print(f"{Fore.RED}❌ TTS motor başlatma hatası: {e}{Style.RESET_ALL}")
-            return
+                print(f"{Fore.YELLOW}⚠️  pyttsx3 başarısız, gTTS deneniyor...{Style.RESET_ALL}")
+            
+            # gTTS fallback
+            if GTTS_AVAILABLE:
+                use_gtts = True
+                if COLORS_ENABLED:
+                    print(f"{Fore.GREEN}✓ gTTS modunda çalışıyor{Style.RESET_ALL}")
+            else:
+                if COLORS_ENABLED:
+                    print(f"{Fore.RED}❌ TTS motor başlatma hatası: {e}{Style.RESET_ALL}")
+                return
 
         while not self.stop_speaking:
             try:
@@ -141,17 +161,29 @@ class TextToSpeech:
                 
                 self.speaking = True
                 
-                try:
-                    # Ayarlar değiştiyse güncelle
-                    engine.setProperty('rate', self.rate)
-                    engine.setProperty('volume', self.volume)
-                    
-                    engine.say(text)
-                    engine.runAndWait()
+                if use_gtts:
+                    # gTTS ile seslendir
+                    try:
+                        tts = gTTS(text=text, lang=self.language_code[:2] if self.language_code else 'en')
+                        tts.save("/tmp/tts_output.mp3")
+                        import os
+                        os.system("ffplay -nodisp -autoexit /tmp/tts_output.mp3 >/dev/null 2>&1 || mpg123 /tmp/tts_output.mp3 >/dev/null 2>&1 || play /tmp/tts_output.mp3 >/dev/null 2>&1 || echo 'Audio playback not available'")
+                    except Exception as gtts_err:
+                        if COLORS_ENABLED:
+                            print(f"{Fore.RED}gTTS hatası: {gtts_err}{Style.RESET_ALL}")
+                else:
+                    # pyttsx3 ile seslendir
+                    try:
+                        # Ayarlar değiştiyse güncelle
+                        engine.setProperty('rate', self.rate)
+                        engine.setProperty('volume', self.volume)
+                        
+                        engine.say(text)
+                        engine.runAndWait()
 
-                except Exception as e:
-                    if COLORS_ENABLED:
-                        print(f"{Fore.RED}❌ TTS motor hatası: {e} — Motor yeniden başlatılıyor...{Style.RESET_ALL}")
+                    except Exception as e:
+                        if COLORS_ENABLED:
+                            print(f"{Fore.RED}❌ TTS motor hatası: {e} — Motor yeniden başlatılıyor...{Style.RESET_ALL}")
                     # Motor bozulduysa yeniden başlat
                     try:
                         engine = self._init_engine()
