@@ -174,6 +174,7 @@ class TikTokLiveAgent:
         self.print_event("YORUM", f"{username}: {comment}", Fore.CYAN)
 
         # Yorumu seslendir
+        print(f"[DEBUG] speech_handler.on_comment çağrılıyor: {username}")
         self.speech_handler.on_comment(username, comment)
 
         # Otomatik yanıtlar

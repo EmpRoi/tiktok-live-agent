@@ -81,8 +81,8 @@
   },
   "commenter": {
     "enabled": true,
-    "username": "",
-    "password": "",
+    "username": "creator01.72",
+    "password": "Azadi.72397239",
     "headless": true,
     "comment_delay": 2,
     "auto_reply": true
